@@ -34,7 +34,8 @@ namespace Sitecore.Support.Cintel.Reporting.Aggregate.Visitors.Processors
 
                 args.ResultSet.TotalResultCount = ctx.GetQueryable<IndexedContact>().Count();
                 IQueryable<IndexedVisit> groupedVisits = new List<IndexedVisit>().AsQueryable();
-                HashSet<IndexedContact> populatedContacts = new HashSet<IndexedContact>();
+                SameIndexedContactComparer comparer = new SameIndexedContactComparer();
+                HashSet<IndexedContact> populatedContacts = new HashSet<IndexedContact>(comparer);
                 int iterationNumber = 0;
                 do
                 {
@@ -47,17 +48,18 @@ namespace Sitecore.Support.Cintel.Reporting.Aggregate.Visitors.Processors
                     {
                         var row = args.ResultTableForView.NewRow();
                         var indexedContact = ctx.GetQueryable<IndexedContact>().Where(contact => sr.ContactId == contact.ContactId).Take(1).First<IndexedContact>();
-                        if (indexedContact != null && !populatedContacts.Contains(indexedContact))
+                        if (indexedContact != null)
                         {
-                            BuildBaseResult(row, indexedContact);
-                            args.ResultTableForView.Rows.Add(row);
-
-
-                            if (null != sr)
+                            if (populatedContacts.Add(indexedContact))
                             {
-                                PopulateLatestVisit(sr, ref row);
+                                BuildBaseResult(row, indexedContact);
+                                args.ResultTableForView.Rows.Add(row);
+
+                                if (null != sr)
+                                {
+                                    PopulateLatestVisit(sr, ref row);
+                                }
                             }
-                            populatedContacts.Add(indexedContact);
                         }
 
                     });

@@ -74,6 +74,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reporting\Aggregate\Visitors\Processors\QueryLatestVisitorsFromSearch.cs" />
+    <Compile Include="SameIndexedContactComparer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Config\Include\zzz\Sitecore.Support.163186.config">
